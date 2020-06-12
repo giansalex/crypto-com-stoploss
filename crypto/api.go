@@ -75,15 +75,16 @@ func (api *API) GetBalance() ([]Balance, error) {
 	return response.Data.CoinList, nil
 }
 
-// Sell create sell order
-func (api *API) Sell(order Order) (int, error) {
+// CreateOrder create order
+func (api *API) CreateOrder(order Order) (int, error) {
 	params := url.Values{}
 	params.Add("api_key", api.apiKey)
+	params.Add("price", order.Price)
 	params.Add("side", order.Side)
 	params.Add("symbol", order.Symbol)
 	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
-	params.Add("type", fmt.Sprintf("%d", order.Type))
-	params.Add("volume", fmt.Sprintf("%f", order.Volume))
+	params.Add("type", order.Type)
+	params.Add("volume", order.Volume)
 	params.Add("sign", api.createSign(params))
 
 	resp, err := api.client.PostForm(api.BasePath+"order", params)
@@ -113,7 +114,8 @@ func (api *API) createSign(data url.Values) string {
 	for key, values := range data {
 		rawData += key + strings.Join(values, "")
 	}
-	hash := sha256.Sum256([]byte(rawData + api.apiSecret))
+	rawData += api.apiSecret
+	hash := sha256.Sum256([]byte(rawData))
 
 	return hex.EncodeToString(hash[:])
 }
