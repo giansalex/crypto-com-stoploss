@@ -11,6 +11,11 @@ type Exchange struct {
 	api *cryptoCom.API
 }
 
+// NewExchange create Exchange instance
+func NewExchange(api *cryptoCom.API) *Exchange {
+	return &Exchange{api}
+}
+
 // GetBalance get balance for coin
 func (exchange *Exchange) GetBalance(coin string) (string, error) {
 	balances, err := exchange.api.GetBalance()
