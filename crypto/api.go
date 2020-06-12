@@ -24,7 +24,7 @@ type API struct {
 // NewAPI create new API
 func NewAPI(apiKey string, apiSecret string) *API {
 
-	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com"}
+	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v1/"}
 }
 
 // GetPrice get current ticket price
@@ -32,7 +32,7 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 	params := url.Values{}
 	params.Add("symbol", ticket)
 
-	resp, err := api.client.Get(api.BasePath + "/v1/ticker?" + params.Encode())
+	resp, err := api.client.Get(api.BasePath + "ticker?" + params.Encode())
 
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (api *API) GetBalance() ([]Balance, error) {
 	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
 	params.Add("sign", api.createSign(params))
 
-	resp, err := api.client.PostForm(api.BasePath+"/v1/account", params)
+	resp, err := api.client.PostForm(api.BasePath+"account", params)
 
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (api *API) Sell(order Order) (int, error) {
 	params.Add("volume", fmt.Sprintf("%f", order.Volume))
 	params.Add("sign", api.createSign(params))
 
-	resp, err := api.client.PostForm(api.BasePath+"/v1/order", params)
+	resp, err := api.client.PostForm(api.BasePath+"order", params)
 
 	if err != nil {
 		return 0, err
