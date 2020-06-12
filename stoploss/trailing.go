@@ -11,6 +11,16 @@ type Trailing struct {
 	stopFactor float64
 }
 
+// NewTrailing new trailing instance
+func NewTrailing(exchange *Exchange, baseCoin string, countCoin string, factor float64) *Trailing {
+	return &Trailing{
+		exchange:   exchange,
+		market:     baseCoin + countCoin,
+		baseCoin:   baseCoin,
+		stopFactor: factor,
+	}
+}
+
 // RunStop check stop loss apply
 func (tlg *Trailing) RunStop() bool {
 	marketPrice, _ := tlg.exchange.GetMarketPrice(tlg.market)
