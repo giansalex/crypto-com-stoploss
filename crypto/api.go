@@ -79,7 +79,11 @@ func (api *API) GetBalance() ([]Balance, error) {
 func (api *API) CreateOrder(order Order) (int, error) {
 	params := url.Values{}
 	params.Add("api_key", api.apiKey)
-	params.Add("price", order.Price)
+
+	if order.Type == "1" {
+		params.Add("price", order.Price)
+	}
+
 	params.Add("side", order.Side)
 	params.Add("symbol", order.Symbol)
 	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
