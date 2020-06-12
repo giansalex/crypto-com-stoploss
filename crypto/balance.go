@@ -9,6 +9,10 @@ type Balance struct {
 }
 
 type balanceResponse struct {
-	TotalAsset float64   `json:"total_asset"`
-	CoinList   []Balance `json:"coin_list"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data struct {
+		TotalAsset float64   `json:"total_asset"`
+		CoinList   []Balance `json:"coin_list"`
+	} `json:"data"`
 }
