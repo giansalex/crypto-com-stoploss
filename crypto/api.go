@@ -20,6 +20,12 @@ type API struct {
 	BasePath string
 }
 
+// NewAPI create new API
+func NewAPI(apiKey string, apiSecret string) *API {
+
+	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com"}
+}
+
 // GetPrice get current ticket price
 func (api *API) GetPrice(ticket string) (*Price, error) {
 	params := url.Values{}
