@@ -9,7 +9,7 @@ type Order struct {
 }
 
 type orderResponse struct {
-	Code int    `json:"code"`
+	Code string `json:"code"`
 	Msg  string `json:"msg"`
 	Data struct {
 		OrderID int `json:"order_id"`

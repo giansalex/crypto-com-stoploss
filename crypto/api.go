@@ -43,7 +43,7 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 	var response priceResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != 0 {
+	if response.Code != "0" {
 		return nil, errors.New(response.Msg)
 	}
 
@@ -68,7 +68,7 @@ func (api *API) GetBalance() ([]Balance, error) {
 	var response balanceResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != 0 {
+	if response.Code != "0" {
 		return nil, errors.New(response.Msg)
 	}
 
@@ -97,7 +97,7 @@ func (api *API) Sell(order Order) (int, error) {
 	var response orderResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != 0 {
+	if response.Code != "0" {
 		return 0, errors.New(response.Msg)
 	}
 
