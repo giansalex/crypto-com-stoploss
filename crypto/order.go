@@ -2,10 +2,11 @@ package crypto
 
 // Order order parameters
 type Order struct {
-	Side   string  `json:"side"`
-	Symbol string  `json:"symbol"`
-	Type   int     `json:"type"`
-	Volume float64 `json:"volume"`
+	Price  string `json:"price"`
+	Side   string `json:"side"`
+	Symbol string `json:"symbol"`
+	Type   string `json:"type"`
+	Volume string `json:"volume"`
 }
 
 type orderResponse struct {
