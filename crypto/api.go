@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -53,7 +54,7 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 func (api *API) GetBalance() ([]Balance, error) {
 	params := url.Values{}
 	params.Add("api_key", api.apiKey)
-	params.Add("time", api.unixTime())
+	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
 	params.Add("sign", api.createSign(params))
 
 	resp, err := api.client.PostForm(api.BasePath+"/v1/account", params)
@@ -71,18 +72,18 @@ func (api *API) GetBalance() ([]Balance, error) {
 		return nil, errors.New(response.Msg)
 	}
 
-	return response.CoinList, nil
+	return response.Data.CoinList, nil
 }
 
 // Sell create sell order
 func (api *API) Sell(order Order) (int, error) {
 	params := url.Values{}
-	params.Add("api_key", order.APIKey)
+	params.Add("api_key", api.apiKey)
 	params.Add("side", order.Side)
 	params.Add("symbol", order.Symbol)
-	params.Add("time", api.unixTime())
-	params.Add("type", order.Type)
-	params.Add("volume", order.Volume)
+	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
+	params.Add("type", fmt.Sprintf("%d", order.Type))
+	params.Add("volume", fmt.Sprintf("%f", order.Volume))
 	params.Add("sign", api.createSign(params))
 
 	resp, err := api.client.PostForm(api.BasePath+"/v1/order", params)
@@ -112,7 +113,7 @@ func (api *API) createSign(data url.Values) string {
 	for key, values := range data {
 		rawData += key + strings.Join(values, "")
 	}
-	bytesToSign = []byte(rawData + api.apiSecret)
+	hash := sha256.Sum256([]byte(rawData + api.apiSecret))
 
-	return hex.EncodeToString(sha256.Sum256(bytesToSign))
+	return hex.EncodeToString(hash[:])
 }
