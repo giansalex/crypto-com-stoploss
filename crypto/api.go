@@ -105,7 +105,7 @@ func (api *API) Sell(order Order) (int, error) {
 }
 
 func (api *API) unixTime() int64 {
-	return time.Now().UTC().Unix()
+	return time.Now().UTC().Unix() * 1000
 }
 
 func (api *API) createSign(data url.Values) string {
