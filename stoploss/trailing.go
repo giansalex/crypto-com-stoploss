@@ -4,17 +4,16 @@ import "math"
 
 // Trailing stop-loss runner
 type Trailing struct {
-	lastStop float64
-	exchange *Exchange
-
-	Market     string
-	Type       string
-	StopFactor float64
+	exchange   *Exchange
+	market     string
+	baseCoin   string
+	lastStop   float64
+	stopFactor float64
 }
 
 // RunStop check stop loss apply
 func (tlg *Trailing) RunStop() bool {
-	marketPrice, _ := tlg.exchange.GetMarketPrice(tlg.Market)
+	marketPrice, _ := tlg.exchange.GetMarketPrice(tlg.market)
 
 	tlg.lastStop = tlg.refreshStop(tlg.lastStop, marketPrice)
 
@@ -22,12 +21,12 @@ func (tlg *Trailing) RunStop() bool {
 		return false
 	}
 
-	quantity, _ := tlg.exchange.GetBalance(tlg.Market)
-	tlg.exchange.Sell(tlg.Market, quantity)
+	quantity, _ := tlg.exchange.GetBalance(tlg.baseCoin)
+	tlg.exchange.Sell(tlg.market, quantity)
 
 	return true
 }
 
 func (tlg *Trailing) refreshStop(stop float64, price float64) float64 {
-	return math.Max(stop, price*tlg.StopFactor)
+	return math.Max(stop, price*(1-tlg.stopFactor))
 }
