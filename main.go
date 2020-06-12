@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	pairPtr    = flag.String("pair", "", "market pair, example: MCO/USDT")
-	percentPtr = flag.Float64("percent", 0.00, "stop loss percent, example: 3.0 (3%)")
+	pairPtr     = flag.String("pair", "", "market pair, example: MCO/USDT")
+	percentPtr  = flag.Float64("percent", 0.00, "stop loss percent, example: 3.0 (3%)")
+	intervalPtr = flag.Int("interval", 30, "interval in seconds to update price, example: 30 (30 sec.)")
 )
 
 func main() {
@@ -39,6 +40,6 @@ func main() {
 			break
 		}
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(time.Duration(*intervalPtr) * time.Second)
 	}
 }
