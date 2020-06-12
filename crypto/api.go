@@ -1,16 +1,21 @@
 package crypto
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 )
 
 // API Crypto.com Api
 type API struct {
-	apiKey string
-	client *http.Client
+	apiKey    string
+	apiSecret string
+	client    *http.Client
 
 	BasePath string
 }
@@ -41,9 +46,9 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 // GetBalance account balance
 func (api *API) GetBalance() ([]Balance, error) {
 	params := url.Values{}
-	params.Add("api_key", "")
-	params.Add("time", "")
-	params.Add("sign", "")
+	params.Add("api_key", api.apiKey)
+	params.Add("time", api.unixTime())
+	params.Add("sign", api.createSign(params))
 
 	resp, err := api.client.PostForm(api.BasePath+"/v1/account", params)
 
@@ -69,10 +74,11 @@ func (api *API) Sell(order Order) (int, error) {
 	params.Add("api_key", order.APIKey)
 	params.Add("side", order.Side)
 	params.Add("symbol", order.Symbol)
-	params.Add("time", order.Time)
+	params.Add("time", api.unixTime())
 	params.Add("type", order.Type)
 	params.Add("volume", order.Volume)
-	params.Add("sign", order.Sign)
+	params.Add("sign", api.createSign(params))
+
 	resp, err := api.client.PostForm(api.BasePath+"/v1/order", params)
 
 	if err != nil {
@@ -89,4 +95,18 @@ func (api *API) Sell(order Order) (int, error) {
 	}
 
 	return response.Data.OrderID, nil
+}
+
+func (api *API) unixTime() int64 {
+	return time.Now().UTC().Unix()
+}
+
+func (api *API) createSign(data url.Values) string {
+	rawData := ""
+	for key, values := range data {
+		rawData += key + strings.Join(values, "")
+	}
+	bytesToSign = []byte(rawData + api.apiSecret)
+
+	return hex.EncodeToString(sha256.Sum256(bytesToSign))
 }
