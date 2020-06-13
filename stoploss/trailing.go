@@ -25,9 +25,10 @@ func NewTrailing(exchange *Exchange, baseCoin string, countCoin string, factor f
 func (tlg *Trailing) RunStop() bool {
 	marketPrice, _ := tlg.exchange.GetMarketPrice(tlg.market)
 
-	tlg.lastStop = tlg.refreshStop(tlg.lastStop, marketPrice)
+	stop := tlg.refreshStop(tlg.lastStop, marketPrice)
 
-	if marketPrice > tlg.lastStop {
+	if marketPrice > stop {
+		tlg.lastStop = stop
 		return false
 	}
 

@@ -35,8 +35,7 @@ func main() {
 	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), pair[0], pair[1], *percentPtr/100)
 
 	for {
-		stop := trailing.RunStop()
-		if stop {
+		if trailing.RunStop() {
 			break
 		}
 
