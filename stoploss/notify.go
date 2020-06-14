@@ -34,5 +34,9 @@ func (notify *Notify) Send(message string) {
 
 	msg := tgbotapi.NewMessage(notify.channelID, message)
 
-	bot.Send(msg)
+	_, err = bot.Send(msg)
+
+	if err != nil {
+		fmt.Println("Cannot send message to telegram:", err.Error())
+	}
 }
