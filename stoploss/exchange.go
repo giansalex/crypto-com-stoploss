@@ -2,6 +2,7 @@ package stoploss
 
 import (
 	"strconv"
+	"strings"
 
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
 )
@@ -23,8 +24,9 @@ func (exchange *Exchange) GetBalance(coin string) (string, error) {
 		return "0", err
 	}
 
+	coin = strings.ToLower(coin)
 	for _, balance := range balances {
-		if balance.Coin == coin {
+		if strings.ToLower(balance.Coin) == coin {
 			return balance.Normal, nil
 		}
 	}
