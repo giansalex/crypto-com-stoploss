@@ -32,7 +32,8 @@ func main() {
 
 	pair := strings.Split(strings.ToLower(*pairPtr), "/")
 	api := cryptoCom.NewAPI(apiKey, secret)
-	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), pair[0], pair[1], *percentPtr/100)
+	notify := &stoploss.Notify{}
+	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100)
 
 	for {
 		if trailing.RunStop() {
