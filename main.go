@@ -15,7 +15,8 @@ var (
 	pairPtr     = flag.String("pair", "", "market pair, example: MCO/USDT")
 	percentPtr  = flag.Float64("percent", 0.00, "stop loss percent, example: 3.0 (3%)")
 	intervalPtr = flag.Int("interval", 30, "interval in seconds to update price, example: 30 (30 sec.)")
-	chatPtr     = flag.Int64("telegram.chat", 0, "telegram Chat ID for notify")
+	amountPtr   = flag.String("amount", "", "(optional) amount to sell on stoploss")
+	chatPtr     = flag.Int64("telegram.chat", 0, "(optional) telegram Chat ID for notify")
 )
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	pair := strings.Split(strings.ToLower(*pairPtr), "/")
 	api := cryptoCom.NewAPI(apiKey, secret)
 	notify := stoploss.NewNotify(os.Getenv("TELEGRAM_TOKEN"), *chatPtr)
-	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100)
+	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100, *amountPtr)
 
 	for {
 		if trailing.RunStop() {
