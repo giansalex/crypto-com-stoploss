@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strings"
 )
 
 // Trailing stop-loss runner
@@ -58,5 +59,5 @@ func (tlg *Trailing) notifyStopLossChange(prev float64, next float64) {
 		return
 	}
 
-	tlg.notify.Send(fmt.Sprintf("Stop-loss %s: %.6f", tlg.market, next))
+	tlg.notify.Send(fmt.Sprintf("Stop-loss %s: %.6f", strings.ToUpper(tlg.market), next))
 }
