@@ -43,7 +43,7 @@ func (tlg *Trailing) RunStop() bool {
 
 	quantity, _ := tlg.exchange.GetBalance(tlg.baseCoin)
 	tlg.exchange.Sell(tlg.market, quantity)
-	tlg.notify.Send(fmt.Sprintf("Sell: %s %s", quantity, tlg.baseCoin))
+	tlg.notify.Send(fmt.Sprintf("Sell: %s %s", quantity, strings.ToUpper(tlg.baseCoin)))
 
 	return true
 }
