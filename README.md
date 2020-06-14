@@ -13,5 +13,5 @@ Require environment variables: `CRYPTO_APIKEY`, `CRYPTO_SECRET`.
 Use telegram for notifications.
 Require additional environment variables: `TELEGRAM_TOKEN`
 ```sh
-./crypto -pair=BTC/USDT -percent=3 -interval=60 -telegram.channel=XXXXXXXX
+./crypto -pair=BTC/USDT -percent=3 -interval=60 -telegram.chat=<chat-id>
 ```
