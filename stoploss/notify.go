@@ -8,8 +8,13 @@ import (
 
 // Notify notify stoploss
 type Notify struct {
-	tlgToken string
-	chanelID int64
+	tlgToken  string
+	channelID int64
+}
+
+// NewNotify create Notify instance
+func NewNotify(telegramToken string, channelID int64) *Notify {
+	return &Notify{telegramToken, channelID}
 }
 
 // Send send message
@@ -27,7 +32,7 @@ func (notify *Notify) Send(message string) {
 		return
 	}
 
-	msg := tgbotapi.NewMessage(notify.chanelID, message)
+	msg := tgbotapi.NewMessage(notify.channelID, message)
 
 	bot.Send(msg)
 }
