@@ -44,12 +44,12 @@ func (exchange *Exchange) GetMarketPrice(market string) (float64, error) {
 }
 
 // Sell create a sell order to market price
-func (exchange *Exchange) Sell(market string, quantity string) (int, error) {
+func (exchange *Exchange) Sell(market string, quantity float64) (string, error) {
 	order := cryptoCom.Order{
-		Side:   "SELL",
-		Symbol: market,
-		Type:   "2", // type=2: Market Price
-		Volume: quantity,
+		Side:     "SELL",
+		Symbol:   market,
+		Type:     "MARKET",
+		Quantity: quantity,
 	}
 
 	return exchange.api.CreateOrder(order)
