@@ -17,20 +17,20 @@ func NewExchange(api *cryptoCom.API) *Exchange {
 }
 
 // GetBalance get balance for coin
-func (exchange *Exchange) GetBalance(coin string) (string, error) {
-	balances, err := exchange.api.GetBalance()
+func (exchange *Exchange) GetBalance(coin string) (float64, error) {
+	coin = strings.ToUpper(coin)
+	balances, err := exchange.api.GetBalance(coin)
 	if err != nil {
-		return "0", err
+		return 0, err
 	}
 
-	coin = strings.ToLower(coin)
 	for _, balance := range balances {
-		if strings.ToLower(balance.Coin) == coin {
-			return balance.Normal, nil
+		if strings.ToUpper(balance.Currency) == coin {
+			return balance.Available, nil
 		}
 	}
 
-	return "0", nil
+	return 0, nil
 }
 
 // GetMarketPrice get last price for market pair
