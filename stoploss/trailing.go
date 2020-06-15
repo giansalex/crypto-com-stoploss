@@ -23,7 +23,7 @@ func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin 
 	return &Trailing{
 		exchange:   exchange,
 		notify:     notify,
-		market:     baseCoin + countCoin,
+		market:     baseCoin + "_" + countCoin,
 		baseCoin:   baseCoin,
 		quantity:   quantity,
 		stopFactor: factor,

@@ -24,15 +24,15 @@ type API struct {
 // NewAPI create new API
 func NewAPI(apiKey string, apiSecret string) *API {
 
-	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v1/"}
+	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v2/"}
 }
 
 // GetPrice get current ticket price
 func (api *API) GetPrice(ticket string) (*Price, error) {
 	params := url.Values{}
-	params.Add("symbol", ticket)
+	params.Add("instrument_name", ticket)
 
-	resp, err := api.client.Get(api.BasePath + "ticker?" + params.Encode())
+	resp, err := api.client.Get(api.BasePath + "public/get-ticker?" + params.Encode())
 
 	if err != nil {
 		return nil, err
