@@ -1,6 +1,8 @@
 package crypto
 
 import (
+	"bytes"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -51,13 +53,20 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 }
 
 // GetBalance account balance
-func (api *API) GetBalance() ([]Balance, error) {
-	params := url.Values{}
-	params.Add("api_key", api.apiKey)
-	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
-	params.Add("sign", api.createSign(params))
+func (api *API) GetBalance(coin string) ([]Balance, error) {
+	params := make(map[string]interface{})
+	params["id"] = 11
+	params["method"] = "private/get-account-summary"
+	params["params"] = map[string]string{
+		"currency": coin,
+	}
+	params["api_key"] = api.apiKey
+	params["nonce"] = api.unixTime()
 
-	resp, err := api.client.PostForm(api.BasePath+"account", params)
+	api.sign(params)
+
+	payload, _ := json.Marshal(params)
+	resp, err := api.client.Post(api.BasePath+"private/get-account-summary", "application/json", bytes.NewBuffer(payload))
 
 	if err != nil {
 		return nil, err
@@ -68,11 +77,11 @@ func (api *API) GetBalance() ([]Balance, error) {
 	var response balanceResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != "0" {
-		return nil, errors.New(response.Msg)
+	if response.Code != 0 {
+		return nil, errors.New(response.Message)
 	}
 
-	return response.Data.CoinList, nil
+	return response.Result.Accounts, nil
 }
 
 // CreateOrder create order
@@ -110,7 +119,7 @@ func (api *API) CreateOrder(order Order) (int, error) {
 }
 
 func (api *API) unixTime() int64 {
-	return time.Now().UTC().Unix() * 1000
+	return time.Now().UTC().UnixNano() / 1e6
 }
 
 func (api *API) createSign(data url.Values) string {
@@ -122,4 +131,19 @@ func (api *API) createSign(data url.Values) string {
 	hash := sha256.Sum256([]byte(rawData))
 
 	return hex.EncodeToString(hash[:])
+}
+
+func (api *API) sign(request map[string]interface{}) {
+	params := request["params"].(map[string]string)
+	paramString := ""
+	for key, values := range params {
+		paramString += key + values
+	}
+	sigPayload := fmt.Sprintf("%v%v%s%s%v", request["method"], request["id"], api.apiKey, paramString, request["nonce"])
+
+	key := []byte(api.apiSecret)
+	mac := hmac.New(sha256.New, key)
+	mac.Write([]byte(sigPayload))
+
+	request["sig"] = hex.EncodeToString(mac.Sum(nil))
 }
