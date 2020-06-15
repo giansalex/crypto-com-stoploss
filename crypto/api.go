@@ -43,7 +43,7 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 	var response priceResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != "0" {
+	if response.Code != 0 {
 		return nil, errors.New(response.Msg)
 	}
 

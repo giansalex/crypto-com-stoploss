@@ -2,10 +2,9 @@ package crypto
 
 // Balance account balance
 type Balance struct {
-	Normal      string `json:"normal"`
-	Locked      string `json:"locked"`
-	BtcValuatin string `json:"btcValuatin"`
-	Coin        string `json:"coin"`
+	Normal string `json:"normal"`
+	Locked string `json:"locked"`
+	Coin   string `json:"coin"`
 }
 
 type balanceResponse struct {
