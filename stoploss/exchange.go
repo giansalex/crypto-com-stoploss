@@ -1,7 +1,6 @@
 package stoploss
 
 import (
-	"strconv"
 	"strings"
 
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
@@ -41,7 +40,7 @@ func (exchange *Exchange) GetMarketPrice(market string) (float64, error) {
 		return 0, err
 	}
 
-	return strconv.ParseFloat(price.Last, 64)
+	return price.Last, nil
 }
 
 // Sell create a sell order to market price

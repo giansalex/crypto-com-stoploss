@@ -44,10 +44,10 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 	json.NewDecoder(resp.Body).Decode(&response)
 
 	if response.Code != 0 {
-		return nil, errors.New(response.Msg)
+		return nil, errors.New(response.Message)
 	}
 
-	return &response.Data, nil
+	return &response.Result.Data, nil
 }
 
 // GetBalance account balance
