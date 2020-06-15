@@ -32,7 +32,7 @@ func main() {
 		log.Fatal("pair, percent parameters are required")
 	}
 
-	pair := strings.Split(strings.ToLower(*pairPtr), "/")
+	pair := strings.Split(strings.ToUpper(*pairPtr), "/")
 	api := cryptoCom.NewAPI(apiKey, secret)
 	notify := stoploss.NewNotify(os.Getenv("TELEGRAM_TOKEN"), *chatPtr)
 	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100, *amountPtr)
