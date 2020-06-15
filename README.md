@@ -12,7 +12,7 @@ Build executable `go build -ldflags "-s -w" -o crypto`.
 ## Run
 > You can use [docker image](https://hub.docker.com/r/giansalex/crypto-com-stoploss).
 
-First create [API Keys](https://crypto.com/exchange-doc#generate-key). 
+First create [API Keys](https://crypto.com/exchange/personal/api-management). 
 
 Simple command to run bot stoploss -
 Require environment variables: `CRYPTO_APIKEY`, `CRYPTO_SECRET`.

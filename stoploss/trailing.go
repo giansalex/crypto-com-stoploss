@@ -14,16 +14,16 @@ type Trailing struct {
 	market     string
 	baseCoin   string
 	lastStop   float64
-	quantity   string
+	quantity   float64
 	stopFactor float64
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin string, factor float64, quantity string) *Trailing {
+func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin string, factor float64, quantity float64) *Trailing {
 	return &Trailing{
 		exchange:   exchange,
 		notify:     notify,
-		market:     baseCoin + countCoin,
+		market:     baseCoin + "_" + countCoin,
 		baseCoin:   baseCoin,
 		quantity:   quantity,
 		stopFactor: factor,
@@ -44,12 +44,12 @@ func (tlg *Trailing) RunStop() bool {
 	}
 
 	quantity := tlg.quantity
-	if quantity == "" {
+	if quantity == 0 {
 		quantity, _ = tlg.exchange.GetBalance(tlg.baseCoin)
 	}
 
 	tlg.exchange.Sell(tlg.market, quantity)
-	tlg.notify.Send(fmt.Sprintf("Sell: %s %s - Market Price: %.6f", quantity, strings.ToUpper(tlg.baseCoin), marketPrice))
+	tlg.notify.Send(fmt.Sprintf("Sell: %.4f %s - Market Price: %.6f", quantity, strings.ToUpper(tlg.baseCoin), marketPrice))
 
 	return true
 }

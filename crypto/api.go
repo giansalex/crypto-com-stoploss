@@ -1,6 +1,8 @@
 package crypto
 
 import (
+	"bytes"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -8,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 )
@@ -24,15 +27,15 @@ type API struct {
 // NewAPI create new API
 func NewAPI(apiKey string, apiSecret string) *API {
 
-	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v1/"}
+	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v2/"}
 }
 
 // GetPrice get current ticket price
 func (api *API) GetPrice(ticket string) (*Price, error) {
 	params := url.Values{}
-	params.Add("symbol", ticket)
+	params.Add("instrument_name", ticket)
 
-	resp, err := api.client.Get(api.BasePath + "ticker?" + params.Encode())
+	resp, err := api.client.Get(api.BasePath + "public/get-ticker?" + params.Encode())
 
 	if err != nil {
 		return nil, err
@@ -44,20 +47,29 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 	json.NewDecoder(resp.Body).Decode(&response)
 
 	if response.Code != 0 {
-		return nil, errors.New(response.Msg)
+		return nil, errors.New(response.Message)
 	}
 
-	return &response.Data, nil
+	return &response.Result.Data, nil
 }
 
 // GetBalance account balance
-func (api *API) GetBalance() ([]Balance, error) {
-	params := url.Values{}
-	params.Add("api_key", api.apiKey)
-	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
-	params.Add("sign", api.createSign(params))
+func (api *API) GetBalance(coin string) ([]Balance, error) {
+	method := "private/get-account-summary"
 
-	resp, err := api.client.PostForm(api.BasePath+"account", params)
+	request := make(map[string]interface{})
+	request["id"] = api.createID()
+	request["method"] = method
+	request["params"] = map[string]interface{}{
+		"currency": coin,
+	}
+	request["api_key"] = api.apiKey
+	request["nonce"] = api.unixTime()
+
+	api.sign(request)
+
+	payload, _ := json.Marshal(request)
+	resp, err := api.client.Post(api.BasePath+method, "application/json", bytes.NewBuffer(payload))
 
 	if err != nil {
 		return nil, err
@@ -68,33 +80,47 @@ func (api *API) GetBalance() ([]Balance, error) {
 	var response balanceResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != "0" {
-		return nil, errors.New(response.Msg)
+	if response.Code != 0 {
+		return nil, errors.New(response.Message)
 	}
 
-	return response.Data.CoinList, nil
+	return response.Result.Accounts, nil
 }
 
 // CreateOrder create order
-func (api *API) CreateOrder(order Order) (int, error) {
-	params := url.Values{}
-	params.Add("api_key", api.apiKey)
+func (api *API) CreateOrder(order Order) (string, error) {
+	method := "private/create-order"
 
-	if order.Type == "1" {
-		params.Add("price", order.Price)
+	params := map[string]interface{}{
+		"instrument_name": order.Symbol,
+		"side":            order.Side,
+		"type":            order.Type,
 	}
 
-	params.Add("side", order.Side)
-	params.Add("symbol", order.Symbol)
-	params.Add("time", fmt.Sprintf("%d", api.unixTime()))
-	params.Add("type", order.Type)
-	params.Add("volume", order.Volume)
-	params.Add("sign", api.createSign(params))
+	if order.Type == "LIMIT" {
+		params["price"] = order.Price
+	}
 
-	resp, err := api.client.PostForm(api.BasePath+"order", params)
+	if order.Type == "MARKET" && order.Side == "BUY" {
+		params["notional"] = order.Quantity
+	} else {
+		params["quantity"] = order.Quantity
+	}
+
+	request := make(map[string]interface{})
+	request["id"] = api.createID()
+	request["method"] = method
+	request["params"] = params
+	request["api_key"] = api.apiKey
+	request["nonce"] = api.unixTime()
+
+	api.sign(request)
+
+	payload, _ := json.Marshal(request)
+	resp, err := api.client.Post(api.BasePath+method, "application/json", bytes.NewBuffer(payload))
 
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	defer resp.Body.Close()
@@ -102,15 +128,19 @@ func (api *API) CreateOrder(order Order) (int, error) {
 	var response orderResponse
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != "0" {
-		return 0, errors.New(response.Msg)
+	if response.Code != 0 {
+		return "", errors.New(response.Message)
 	}
 
-	return response.Data.OrderID, nil
+	return response.Result.OrderID, nil
+}
+
+func (api *API) createID() int64 {
+	return time.Now().UTC().Unix()
 }
 
 func (api *API) unixTime() int64 {
-	return time.Now().UTC().Unix() * 1000
+	return time.Now().UTC().UnixNano() / 1e6
 }
 
 func (api *API) createSign(data url.Values) string {
@@ -122,4 +152,30 @@ func (api *API) createSign(data url.Values) string {
 	hash := sha256.Sum256([]byte(rawData))
 
 	return hex.EncodeToString(hash[:])
+}
+
+func (api *API) sign(request map[string]interface{}) {
+	params := request["params"].(map[string]interface{})
+	paramString := ""
+	for _, keySort := range api.getSortKeys(params) {
+		paramString += keySort + fmt.Sprintf("%v", params[keySort])
+	}
+	sigPayload := fmt.Sprintf("%v%v%s%s%v", request["method"], request["id"], api.apiKey, paramString, request["nonce"])
+
+	key := []byte(api.apiSecret)
+	mac := hmac.New(sha256.New, key)
+	mac.Write([]byte(sigPayload))
+
+	request["sig"] = hex.EncodeToString(mac.Sum(nil))
+}
+
+func (api *API) getSortKeys(params map[string]interface{}) []string {
+	keys := make([]string, 0, len(params))
+	for key := range params {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	return keys
 }

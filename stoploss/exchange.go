@@ -1,7 +1,6 @@
 package stoploss
 
 import (
-	"strconv"
 	"strings"
 
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
@@ -18,20 +17,20 @@ func NewExchange(api *cryptoCom.API) *Exchange {
 }
 
 // GetBalance get balance for coin
-func (exchange *Exchange) GetBalance(coin string) (string, error) {
-	balances, err := exchange.api.GetBalance()
+func (exchange *Exchange) GetBalance(coin string) (float64, error) {
+	coin = strings.ToUpper(coin)
+	balances, err := exchange.api.GetBalance(coin)
 	if err != nil {
-		return "0", err
+		return 0, err
 	}
 
-	coin = strings.ToLower(coin)
 	for _, balance := range balances {
-		if strings.ToLower(balance.Coin) == coin {
-			return balance.Normal, nil
+		if strings.ToUpper(balance.Currency) == coin {
+			return balance.Available, nil
 		}
 	}
 
-	return "0", nil
+	return 0, nil
 }
 
 // GetMarketPrice get last price for market pair
@@ -41,16 +40,16 @@ func (exchange *Exchange) GetMarketPrice(market string) (float64, error) {
 		return 0, err
 	}
 
-	return strconv.ParseFloat(price.Last, 64)
+	return price.Last, nil
 }
 
 // Sell create a sell order to market price
-func (exchange *Exchange) Sell(market string, quantity string) (int, error) {
+func (exchange *Exchange) Sell(market string, quantity float64) (string, error) {
 	order := cryptoCom.Order{
-		Side:   "SELL",
-		Symbol: market,
-		Type:   "2", // type=2: Market Price
-		Volume: quantity,
+		Side:     "SELL",
+		Symbol:   market,
+		Type:     "MARKET",
+		Quantity: quantity,
 	}
 
 	return exchange.api.CreateOrder(order)
