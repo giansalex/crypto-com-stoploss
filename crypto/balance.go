@@ -2,16 +2,18 @@ package crypto
 
 // Balance account balance
 type Balance struct {
-	Normal string `json:"normal"`
-	Locked string `json:"locked"`
-	Coin   string `json:"coin"`
+	Balance   float64 `json:"balance"`
+	Available float64 `json:"available"`
+	Order     float64 `json:"order"`
+	Stake     float64 `json:"stake"`
+	Currency  string  `json:"currency"`
 }
 
 type balanceResponse struct {
-	Code string `json:"code"`
-	Msg  string `json:"msg"`
-	Data struct {
-		TotalAsset string    `json:"total_asset"`
-		CoinList   []Balance `json:"coin_list"`
-	} `json:"data"`
+	Code    int    `json:"code"`
+	Method  string `json:"method"`
+	Message string `json:"message"`
+	Result  struct {
+		Accounts []Balance `json:"accounts"`
+	} `json:"result"`
 }
