@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 )
@@ -156,8 +157,8 @@ func (api *API) createSign(data url.Values) string {
 func (api *API) sign(request map[string]interface{}) {
 	params := request["params"].(map[string]interface{})
 	paramString := ""
-	for key, values := range params {
-		paramString += key + fmt.Sprintf("%v", values)
+	for _, keySort := range api.getSortKeys(params) {
+		paramString += keySort + fmt.Sprintf("%v", params[keySort])
 	}
 	sigPayload := fmt.Sprintf("%v%v%s%s%v", request["method"], request["id"], api.apiKey, paramString, request["nonce"])
 
@@ -166,4 +167,15 @@ func (api *API) sign(request map[string]interface{}) {
 	mac.Write([]byte(sigPayload))
 
 	request["sig"] = hex.EncodeToString(mac.Sum(nil))
+}
+
+func (api *API) getSortKeys(params map[string]interface{}) []string {
+	keys := make([]string, 0, len(params))
+	for key := range params {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	return keys
 }
