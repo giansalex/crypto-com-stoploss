@@ -54,9 +54,10 @@ func (api *API) GetPrice(ticket string) (*Price, error) {
 
 // GetBalance account balance
 func (api *API) GetBalance(coin string) ([]Balance, error) {
+	method := "private/get-account-summary"
 	params := make(map[string]interface{})
-	params["id"] = 11
-	params["method"] = "private/get-account-summary"
+	params["id"] = api.createID()
+	params["method"] = method
 	params["params"] = map[string]string{
 		"currency": coin,
 	}
@@ -66,7 +67,7 @@ func (api *API) GetBalance(coin string) ([]Balance, error) {
 	api.sign(params)
 
 	payload, _ := json.Marshal(params)
-	resp, err := api.client.Post(api.BasePath+"private/get-account-summary", "application/json", bytes.NewBuffer(payload))
+	resp, err := api.client.Post(api.BasePath+method, "application/json", bytes.NewBuffer(payload))
 
 	if err != nil {
 		return nil, err
@@ -116,6 +117,10 @@ func (api *API) CreateOrder(order Order) (int, error) {
 	}
 
 	return response.Data.OrderID, nil
+}
+
+func (api *API) createID() int64 {
+	return time.Now().UTC().Unix()
 }
 
 func (api *API) unixTime() int64 {
