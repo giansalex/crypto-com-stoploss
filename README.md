@@ -27,3 +27,17 @@ Require additional environment variables: `TELEGRAM_TOKEN`
 ```
 
 ![Crypto bot Telegram](https://raw.githubusercontent.com/giansalex/crypto-com-trailing-stop-loss/master/doc/telegram-cryptobot.png)
+
+List available parameters 
+```sh
+  -pair string
+        market pair, example: MCO/USDT
+  -interval int
+        interval in seconds to update price, example: 30 (30 sec.) (default 30)
+  -percent float
+        stop loss percent, example: 3.0 (3%)
+  -amount float
+        (optional) amount to sell on stoplos, default sell all
+  -telegram.chat int
+        (optional) telegram Chat ID for notify
+```
