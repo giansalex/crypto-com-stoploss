@@ -32,7 +32,11 @@ func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin 
 
 // RunStop check stop loss apply
 func (tlg *Trailing) RunStop() bool {
-	marketPrice, _ := tlg.exchange.GetMarketPrice(tlg.market)
+	marketPrice, err := tlg.exchange.GetMarketPrice(tlg.market)
+	if err != nil {
+		tlg.notify.Send("Cannot get market price, error:" + err.Error())
+		return true
+	}
 
 	stop := tlg.refreshStop(tlg.lastStop, marketPrice)
 
@@ -45,11 +49,19 @@ func (tlg *Trailing) RunStop() bool {
 
 	quantity := tlg.quantity
 	if quantity == 0 {
-		quantity, _ = tlg.exchange.GetBalance(tlg.baseCoin)
+		quantity, err = tlg.exchange.GetBalance(tlg.baseCoin)
+		if err != nil {
+			tlg.notify.Send("Cannot get balance, error:" + err.Error())
+			return true
+		}
 	}
 
-	tlg.exchange.Sell(tlg.market, quantity)
-	tlg.notify.Send(fmt.Sprintf("Sell: %.4f %s - Market Price: %.6f", quantity, strings.ToUpper(tlg.baseCoin), marketPrice))
+	order, err := tlg.exchange.Sell(tlg.market, quantity)
+	if err != nil {
+		tlg.notify.Send("Cannot create sell order, error:" + err.Error())
+	} else {
+		tlg.notify.Send(fmt.Sprintf("Sell: %.4f %s - Market Price: %.6f - Order ID: %s", quantity, strings.ToUpper(tlg.baseCoin), marketPrice, order))
+	}
 
 	return true
 }
