@@ -13,6 +13,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 // API Crypto.com Api
@@ -26,8 +28,11 @@ type API struct {
 
 // NewAPI create new API
 func NewAPI(apiKey string, apiSecret string) *API {
+	retryClient := retryablehttp.NewClient()
+	retryClient.Logger = nil
+	retryClient.RetryMax = 10
 
-	return &API{apiKey, apiSecret, http.DefaultClient, "https://api.crypto.com/v2/"}
+	return &API{apiKey, apiSecret, retryClient.StandardClient(), "https://api.crypto.com/v2/"}
 }
 
 // GetPrice get current ticket price
