@@ -5,3 +5,7 @@
 [[constraint]]
   name = "github.com/go-telegram-bot-api/telegram-bot-api"
   version = "4.6.4"
+
+[[constraint]]
+  name = "github.com/hashicorp/go-retryablehttp"
+  version = "0.6.6"
