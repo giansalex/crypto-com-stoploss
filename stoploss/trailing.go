@@ -24,7 +24,7 @@ type Trailing struct {
 func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64) *Trailing {
 	pair := strings.Split(strings.ToUpper(market), "/")
 
-	return &Trailing{
+	tlg := &Trailing{
 		exchange:   exchange,
 		notify:     notify,
 		orderType:  strings.ToUpper(orderType),
@@ -34,6 +34,12 @@ func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market st
 		quantity:   quantity,
 		stopFactor: factor,
 	}
+
+	if tlg.orderType == "BUY" {
+		tlg.lastStop = math.MaxFloat64
+	}
+
+	return tlg
 }
 
 // RunStop check stop loss apply
@@ -85,10 +91,6 @@ func (tlg *Trailing) runBuy() bool {
 	if err != nil {
 		tlg.notify.Send("Cannot get market price, error:" + err.Error())
 		return true
-	}
-
-	if tlg.lastStop == 0 {
-		tlg.lastStop = math.MaxFloat64
 	}
 
 	stop := tlg.refreshBuyStop(tlg.lastStop, marketPrice)
