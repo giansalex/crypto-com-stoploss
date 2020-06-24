@@ -13,6 +13,7 @@ type Trailing struct {
 	notify     *Notify
 	market     string
 	baseCoin   string
+	countCoin  string
 	lastStop   float64
 	quantity   float64
 	stopFactor float64
@@ -25,6 +26,7 @@ func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin 
 		notify:     notify,
 		market:     baseCoin + "_" + countCoin,
 		baseCoin:   baseCoin,
+		countCoin:  countCoin,
 		quantity:   quantity,
 		stopFactor: factor,
 	}
@@ -64,6 +66,50 @@ func (tlg *Trailing) RunStop() bool {
 	}
 
 	return true
+}
+
+// RunBuy check buy price
+func (tlg *Trailing) RunBuy() bool {
+	marketPrice, err := tlg.exchange.GetMarketPrice(tlg.market)
+	if err != nil {
+		tlg.notify.Send("Cannot get market price, error:" + err.Error())
+		return true
+	}
+
+	if tlg.lastStop == 0 {
+		tlg.lastStop = math.MaxFloat64
+	}
+
+	stop := tlg.refreshBuyStop(tlg.lastStop, marketPrice)
+
+	if stop > marketPrice {
+		tlg.notifyStopLossChange(tlg.lastStop, stop, marketPrice)
+
+		tlg.lastStop = stop
+		return false
+	}
+
+	quantity := tlg.quantity
+	if quantity == 0 {
+		quantity, err = tlg.exchange.GetBalance(tlg.countCoin)
+		if err != nil {
+			tlg.notify.Send("Cannot get balance, error:" + err.Error())
+			return true
+		}
+	}
+
+	order, err := tlg.exchange.Buy(tlg.market, quantity)
+	if err != nil {
+		tlg.notify.Send("Cannot create buy order, error:" + err.Error())
+	} else {
+		tlg.notify.Send(fmt.Sprintf("Buy: %.4f %s - Market Price: %.6f - Order ID: %s", quantity, strings.ToUpper(tlg.baseCoin), marketPrice, order))
+	}
+
+	return true
+}
+
+func (tlg *Trailing) refreshBuyStop(stop float64, price float64) float64 {
+	return math.Min(stop, price*(1+tlg.stopFactor))
 }
 
 func (tlg *Trailing) refreshStop(stop float64, price float64) float64 {
