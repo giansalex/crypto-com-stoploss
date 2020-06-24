@@ -54,3 +54,15 @@ func (exchange *Exchange) Sell(market string, quantity float64) (string, error) 
 
 	return exchange.api.CreateOrder(order)
 }
+
+// Buy create a buy order to market price
+func (exchange *Exchange) Buy(market string, quantity float64) (string, error) {
+	order := cryptoCom.Order{
+		Side:     "BUY",
+		Symbol:   market,
+		Type:     "MARKET",
+		Quantity: quantity,
+	}
+
+	return exchange.api.CreateOrder(order)
+}

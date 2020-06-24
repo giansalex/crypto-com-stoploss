@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
@@ -12,10 +11,11 @@ import (
 )
 
 var (
+	typePtr     = flag.String("type", "SELL", "order type: SELL or BUY")
 	pairPtr     = flag.String("pair", "", "market pair, example: MCO/USDT")
 	percentPtr  = flag.Float64("percent", 0.00, "stop loss percent, example: 3.0 (3%)")
 	intervalPtr = flag.Int("interval", 30, "interval in seconds to update price, example: 30 (30 sec.)")
-	amountPtr   = flag.Float64("amount", 0, "(optional) amount to sell on stoploss")
+	amountPtr   = flag.Float64("amount", 0, "(optional) amount to order (sell or buy) on stoploss")
 	chatPtr     = flag.Int64("telegram.chat", 0, "(optional) telegram Chat ID for notify")
 )
 
@@ -32,10 +32,9 @@ func main() {
 		log.Fatal("pair, percent parameters are required")
 	}
 
-	pair := strings.Split(strings.ToUpper(*pairPtr), "/")
 	api := cryptoCom.NewAPI(apiKey, secret)
 	notify := stoploss.NewNotify(os.Getenv("TELEGRAM_TOKEN"), *chatPtr)
-	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100, *amountPtr)
+	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, *typePtr, *pairPtr, *percentPtr/100, *amountPtr)
 
 	for {
 		if trailing.RunStop() {
