@@ -27,7 +27,7 @@ func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market st
 	return &Trailing{
 		exchange:   exchange,
 		notify:     notify,
-		orderType:  orderType,
+		orderType:  strings.ToUpper(orderType),
 		market:     pair[0] + "_" + pair[1],
 		baseCoin:   pair[0],
 		countCoin:  pair[1],
@@ -134,5 +134,5 @@ func (tlg *Trailing) notifyStopLossChange(prev float64, next float64, price floa
 		return
 	}
 
-	tlg.notify.Send(fmt.Sprintf("Stop-loss %s: %.6f - Market Price: %.6f", strings.ToUpper(tlg.market), next, price))
+	tlg.notify.Send(fmt.Sprintf("Stop-loss %s %s: %.6f - Market Price: %.6f", tlg.market, tlg.orderType, next, price))
 }
