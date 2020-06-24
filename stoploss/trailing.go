@@ -20,13 +20,15 @@ type Trailing struct {
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange *Exchange, notify *Notify, baseCoin string, countCoin string, factor float64, quantity float64) *Trailing {
+func NewTrailing(exchange *Exchange, notify *Notify, market string, factor float64, quantity float64) *Trailing {
+	pair := strings.Split(strings.ToUpper(market), "/")
+
 	return &Trailing{
 		exchange:   exchange,
 		notify:     notify,
-		market:     baseCoin + "_" + countCoin,
-		baseCoin:   baseCoin,
-		countCoin:  countCoin,
+		market:     pair[0] + "_" + pair[1],
+		baseCoin:   pair[0],
+		countCoin:  pair[1],
 		quantity:   quantity,
 		stopFactor: factor,
 	}

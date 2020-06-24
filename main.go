@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
@@ -32,10 +31,9 @@ func main() {
 		log.Fatal("pair, percent parameters are required")
 	}
 
-	pair := strings.Split(strings.ToUpper(*pairPtr), "/")
 	api := cryptoCom.NewAPI(apiKey, secret)
 	notify := stoploss.NewNotify(os.Getenv("TELEGRAM_TOKEN"), *chatPtr)
-	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, pair[0], pair[1], *percentPtr/100, *amountPtr)
+	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, *pairPtr, *percentPtr/100, *amountPtr)
 
 	for {
 		if trailing.RunStop() {
