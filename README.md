@@ -36,6 +36,8 @@ Require additional environment variables: `TELEGRAM_TOKEN`
 
 List available parameters 
 ```sh
+  -type string
+        order type: SELL or BUY (default: SELL)
   -pair string
         market pair, example: MCO/USDT
   -interval int
