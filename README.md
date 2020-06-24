@@ -20,6 +20,12 @@ Require environment variables: `CRYPTO_APIKEY`, `CRYPTO_SECRET`.
 ./crypto -pair=BTC/USDT -percent=3 -interval=60
 ```
 
+For buy orders (example: Buy 100 USDT when `BTC` up 0.5%)
+
+```sh
+./crypto -type=BUY -pair=BTC/USDT -percent=0.5 -amount=100
+```
+
 Use telegram for notifications - 
 Require additional environment variables: `TELEGRAM_TOKEN`
 ```sh
@@ -37,7 +43,7 @@ List available parameters
   -percent float
         stop loss percent, example: 3.0 (3%)
   -amount float
-        (optional) amount to sell on stoplos, default sell all
+        (optional) amount to order (sell or buy) on stoploss, default all balance
   -telegram.chat int
         (optional) telegram Chat ID for notify
 ```
