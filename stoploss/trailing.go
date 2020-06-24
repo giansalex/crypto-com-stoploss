@@ -11,6 +11,7 @@ import (
 type Trailing struct {
 	exchange   *Exchange
 	notify     *Notify
+	orderType  string
 	market     string
 	baseCoin   string
 	countCoin  string
@@ -20,12 +21,13 @@ type Trailing struct {
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange *Exchange, notify *Notify, market string, factor float64, quantity float64) *Trailing {
+func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64) *Trailing {
 	pair := strings.Split(strings.ToUpper(market), "/")
 
 	return &Trailing{
 		exchange:   exchange,
 		notify:     notify,
+		orderType:  orderType,
 		market:     pair[0] + "_" + pair[1],
 		baseCoin:   pair[0],
 		countCoin:  pair[1],
@@ -36,6 +38,14 @@ func NewTrailing(exchange *Exchange, notify *Notify, market string, factor float
 
 // RunStop check stop loss apply
 func (tlg *Trailing) RunStop() bool {
+	if tlg.orderType == "BUY" {
+		return tlg.runBuy()
+	}
+
+	return tlg.runSell()
+}
+
+func (tlg *Trailing) runSell() bool {
 	marketPrice, err := tlg.exchange.GetMarketPrice(tlg.market)
 	if err != nil {
 		tlg.notify.Send("Cannot get market price, error:" + err.Error())
@@ -70,8 +80,7 @@ func (tlg *Trailing) RunStop() bool {
 	return true
 }
 
-// RunBuy check buy price
-func (tlg *Trailing) RunBuy() bool {
+func (tlg *Trailing) runBuy() bool {
 	marketPrice, err := tlg.exchange.GetMarketPrice(tlg.market)
 	if err != nil {
 		tlg.notify.Send("Cannot get market price, error:" + err.Error())
