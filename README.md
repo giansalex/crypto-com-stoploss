@@ -29,8 +29,9 @@ For buy orders (example: Buy 100 USDT when `BTC` up 0.5%)
 Use telegram for notifications - 
 Require additional environment variables: `TELEGRAM_TOKEN`
 ```sh
-./crypto -pair=BTC/USDT -percent=3 -interval=60 -telegram.chat=<chat-id>
+./crypto -pair=BTC/USDT -percent=3 -interval=60 -telegram.chat=<user-id>
 ```
+> For get user id, talk o the [userinfobot](https://t.me/userinfobot)
 
 ![Crypto bot Telegram](https://raw.githubusercontent.com/giansalex/crypto-com-trailing-stop-loss/master/doc/telegram-cryptobot.png)
 
@@ -47,5 +48,5 @@ List available parameters
   -amount float
         (optional) amount to order (sell or buy) on stoploss, default all balance
   -telegram.chat int
-        (optional) telegram Chat ID for notify
+        (optional) telegram User ID for notify
 ```
