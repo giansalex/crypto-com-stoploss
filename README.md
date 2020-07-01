@@ -26,6 +26,12 @@ For buy orders (example: Buy 100 USDT when `BTC` up 0.5%)
 ./crypto -type=BUY -pair=BTC/USDT -percent=0.5 -amount=100
 ```
 
+For sell orders with static stoploss (example: SELL 0.1 BTC when `BTC` down to 9400 USDT)
+
+```sh
+./crypto -pair=BTC/USDT -price=9400 -amount=0.1
+```
+
 Use telegram for notifications - 
 Require additional environment variables: `TELEGRAM_TOKEN`
 ```sh
@@ -43,8 +49,10 @@ List available parameters
         market pair, example: MCO/USDT
   -interval int
         interval in seconds to update price, example: 30 (30 sec.) (default 30)
+  -price float
+        price (for static stoploss)
   -percent float
-        stop loss percent, example: 3.0 (3%)
+        percent (for trailing stoploss), example: 3.0 (3%)
   -amount float
         (optional) amount to order (sell or buy) on stoploss, default all balance
   -telegram.chat int

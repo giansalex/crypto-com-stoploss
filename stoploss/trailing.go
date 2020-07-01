@@ -16,12 +16,13 @@ type Trailing struct {
 	baseCoin   string
 	countCoin  string
 	lastStop   float64
+	price      float64
 	quantity   float64
 	stopFactor float64
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64) *Trailing {
+func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64, price float64) *Trailing {
 	pair := strings.Split(strings.ToUpper(market), "/")
 
 	tlg := &Trailing{
@@ -31,6 +32,7 @@ func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market st
 		market:     pair[0] + "_" + pair[1],
 		baseCoin:   pair[0],
 		countCoin:  pair[1],
+		price:      price,
 		quantity:   quantity,
 		stopFactor: factor,
 	}
@@ -58,7 +60,7 @@ func (tlg *Trailing) runSell() bool {
 		return true
 	}
 
-	stop := tlg.refreshStop(tlg.lastStop, marketPrice)
+	stop := tlg.getSellStop(marketPrice)
 
 	if marketPrice > stop {
 		tlg.notifyStopLossChange(tlg.lastStop, stop, marketPrice)
@@ -93,7 +95,7 @@ func (tlg *Trailing) runBuy() bool {
 		return true
 	}
 
-	stop := tlg.refreshBuyStop(tlg.lastStop, marketPrice)
+	stop := tlg.getBuyStop(marketPrice)
 
 	if stop > marketPrice {
 		tlg.notifyStopLossChange(tlg.lastStop, stop, marketPrice)
@@ -121,12 +123,20 @@ func (tlg *Trailing) runBuy() bool {
 	return true
 }
 
-func (tlg *Trailing) refreshBuyStop(stop float64, price float64) float64 {
-	return math.Min(stop, price*(1+tlg.stopFactor))
+func (tlg *Trailing) getBuyStop(price float64) float64 {
+	if tlg.stopFactor > 0 {
+		return math.Min(tlg.lastStop, price*(1+tlg.stopFactor))
+	}
+
+	return tlg.price
 }
 
-func (tlg *Trailing) refreshStop(stop float64, price float64) float64 {
-	return math.Max(stop, price*(1-tlg.stopFactor))
+func (tlg *Trailing) getSellStop(price float64) float64 {
+	if tlg.stopFactor > 0 {
+		return math.Max(tlg.lastStop, price*(1-tlg.stopFactor))
+	}
+
+	return tlg.price
 }
 
 func (tlg *Trailing) notifyStopLossChange(prev float64, next float64, price float64) {
