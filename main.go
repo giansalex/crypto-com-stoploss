@@ -33,7 +33,7 @@ func main() {
 		log.Fatal("pair market is required")
 	}
 
-	if percentPtr == nil || *percentPtr <= 0 || pricePtr == nil || *pricePtr <= 0 {
+	if (percentPtr == nil || *percentPtr <= 0) && (pricePtr == nil || *pricePtr <= 0) {
 		log.Fatal("a price or percent parameter is required")
 	}
 
