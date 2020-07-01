@@ -123,11 +123,19 @@ func (tlg *Trailing) runBuy() bool {
 }
 
 func (tlg *Trailing) refreshBuyStop(stop float64, price float64) float64 {
-	return math.Min(stop, price*(1+tlg.stopFactor))
+	if tlg.stopFactor > 0 {
+		return math.Min(stop, price*(1+tlg.stopFactor))
+	}
+
+	return tlg.price
 }
 
 func (tlg *Trailing) refreshStop(stop float64, price float64) float64 {
-	return math.Max(stop, price*(1-tlg.stopFactor))
+	if tlg.stopFactor > 0 {
+		return math.Max(stop, price*(1-tlg.stopFactor))
+	}
+
+	return tlg.price
 }
 
 func (tlg *Trailing) notifyStopLossChange(prev float64, next float64, price float64) {
