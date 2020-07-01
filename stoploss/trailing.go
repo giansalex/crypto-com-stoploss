@@ -115,7 +115,7 @@ func (tlg *Trailing) runBuy() bool {
 	if err != nil {
 		tlg.notify.Send("Cannot create buy order, error:" + err.Error())
 	} else {
-		tlg.notify.Send(fmt.Sprintf("Buy: %.4f %s - Market Price: %.6f - Order ID: %s", quantity, strings.ToUpper(tlg.baseCoin), marketPrice, order))
+		tlg.notify.Send(fmt.Sprintf("Buy: %.4f %s - Market Price (%s): %.6f - Order ID: %s", quantity, tlg.countCoin, tlg.baseCoin, marketPrice, order))
 	}
 
 	return true
