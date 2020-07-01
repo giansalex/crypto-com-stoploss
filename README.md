@@ -43,8 +43,10 @@ List available parameters
         market pair, example: MCO/USDT
   -interval int
         interval in seconds to update price, example: 30 (30 sec.) (default 30)
+  -price float
+        price (for static stoploss)
   -percent float
-        stop loss percent, example: 3.0 (3%)
+        percent (for trailing stoploss), example: 3.0 (3%)
   -amount float
         (optional) amount to order (sell or buy) on stoploss, default all balance
   -telegram.chat int
