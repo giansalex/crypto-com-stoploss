@@ -3,13 +3,23 @@ name: Publish
 on:
   release:
     types: 
-        - created
+        - published
 
 jobs:
-  generate:
-    name: Generate cross-platform builds
+  publish:
+    name: Publish to github release
     runs-on: ubuntu-latest
     steps:
+      - name: Install tools
+        run: sudo apt-get install jq
+      - name: Find current Release
+        run: |
+          GH_TAG=${GITHUB_REF/refs\/tags\//}
+          echo "##[set-output name=upload_url;]$(curl -s -H 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/$REPO/releases/tags/$GH_TAG | jq '.upload_url')"
+        env:
+          REPO: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+        id: find_release
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Generate build files
@@ -20,3 +30,12 @@ jobs:
             name: 'crypto'
             compress: 'true'
             dest: 'dist'
+      - name: Upload Linux artifact 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.find_release.outputs.upload_url }} 
+          asset_path: ./crypto-linux-amd64.tar.gz
+          asset_name: crypto-linux-amd64.tar.gz
+          asset_content_type: application/gzip
