@@ -6,11 +6,10 @@
 
 > A trailing stop order sets the stop price at a fixed amount below the market price with an attached "trailing" amount. As the market price rises, the stop price rises by the trail amount, but if the stock price falls, the stop loss price doesn't change, and a market order is submitted when the stop price is hit.
 
-## Build
-Build executable `go build -ldflags "-s -w" -o crypto`.
+## Installation
+Follow this [guide](https://github.com/giansalex/crypto-com-trailing-stop-loss/wiki/Installation) or use [Docker image](https://hub.docker.com/r/giansalex/crypto-com-stoploss)
 
 ## Run
-> You can use [docker image](https://hub.docker.com/r/giansalex/crypto-com-stoploss).
 
 First create [API Keys](https://crypto.com/exchange/personal/api-management). 
 
