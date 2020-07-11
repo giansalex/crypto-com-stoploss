@@ -11,28 +11,31 @@ Follow this [guide](https://github.com/giansalex/crypto-com-trailing-stop-loss/w
 
 ## Run
 
-First create [API Keys](https://crypto.com/exchange/personal/api-management). 
+Require [API Keys](https://crypto.com/exchange/personal/api-management).    
+Set Environment variables:
+- `CRYPTO_APIKEY`
+- `CRYPTO_SECRET`
+- `TELEGRAM_TOKEN` (optional to notify)
 
-Simple command to run bot stoploss -
-Require environment variables: `CRYPTO_APIKEY`, `CRYPTO_SECRET`.
+Simple command to run bot stoploss
+> Sell all BTC balance to market price when down 3%.
 ```sh
-./crypto -pair=BTC/USDT -percent=3 -interval=60
+./crypto -pair=BTC/USDT -percent=3
 ```
 
-For buy orders (example: Buy 100 USDT when `BTC` up 0.5%)
-
+For buy orders
+> Buy 100 USDT when `BTC` up 0.5%
 ```sh
 ./crypto -type=BUY -pair=BTC/USDT -percent=0.5 -amount=100
 ```
 
-For sell orders with static stoploss (example: SELL 0.1 BTC when `BTC` down to 9400 USDT)
-
+For sell orders with static stoploss
+> SELL 0.1 BTC when `BTC` down to 9400 USDT
 ```sh
 ./crypto -pair=BTC/USDT -price=9400 -amount=0.1
 ```
 
-Use telegram for notifications - 
-Require additional environment variables: `TELEGRAM_TOKEN`
+Use telegram for notifications.
 ```sh
 ./crypto -pair=BTC/USDT -percent=3 -interval=60 -telegram.chat=<user-id>
 ```
