@@ -48,3 +48,24 @@ func TestSell(t *testing.T) {
 	sold = trailing.RunStop()
 	is.True(sold)
 }
+
+func TestBuy(t *testing.T) {
+
+	notify := NewNotify("", 0)
+	exchange := &MockExchange{}
+	trailing := NewTrailing(exchange, notify, "BUY", "BTC/USDT", 0, 200, 9000)
+
+	is := is.New(t)
+
+	exchange.price = 8700
+	bought := trailing.RunStop()
+	is.True(!bought)
+
+	exchange.price = 8900
+	bought = trailing.RunStop()
+	is.True(!bought)
+
+	exchange.price = 9000
+	bought = trailing.RunStop()
+	is.True(bought)
+}
