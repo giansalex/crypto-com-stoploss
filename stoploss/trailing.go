@@ -9,7 +9,7 @@ import (
 
 // Trailing stop-loss runner
 type Trailing struct {
-	exchange   *Exchange
+	exchange   Exchange
 	notify     *Notify
 	orderType  string
 	market     string
@@ -22,7 +22,7 @@ type Trailing struct {
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange *Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64, price float64) *Trailing {
+func NewTrailing(exchange Exchange, notify *Notify, orderType string, market string, factor float64, quantity float64, price float64) *Trailing {
 	pair := strings.Split(strings.ToUpper(market), "/")
 
 	tlg := &Trailing{
