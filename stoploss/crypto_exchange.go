@@ -7,17 +7,17 @@ import (
 )
 
 // Exchange wrapper to connect to crypto.com API
-type Exchange struct {
+type CryptoExchange struct {
 	api *cryptoCom.API
 }
 
 // NewExchange create Exchange instance
-func NewExchange(api *cryptoCom.API) *Exchange {
-	return &Exchange{api}
+func NewExchange(api *cryptoCom.API) *CryptoExchange {
+	return &CryptoExchange{api}
 }
 
 // GetBalance get balance for coin
-func (exchange *Exchange) GetBalance(coin string) (float64, error) {
+func (exchange *CryptoExchange) GetBalance(coin string) (float64, error) {
 	coin = strings.ToUpper(coin)
 	balances, err := exchange.api.GetBalance(coin)
 	if err != nil {
@@ -34,7 +34,7 @@ func (exchange *Exchange) GetBalance(coin string) (float64, error) {
 }
 
 // GetMarketPrice get last price for market pair
-func (exchange *Exchange) GetMarketPrice(market string) (float64, error) {
+func (exchange *CryptoExchange) GetMarketPrice(market string) (float64, error) {
 	price, err := exchange.api.GetPrice(market)
 	if err != nil {
 		return 0, err
@@ -44,7 +44,7 @@ func (exchange *Exchange) GetMarketPrice(market string) (float64, error) {
 }
 
 // Sell create a sell order to market price
-func (exchange *Exchange) Sell(market string, quantity float64) (string, error) {
+func (exchange *CryptoExchange) Sell(market string, quantity float64) (string, error) {
 	order := cryptoCom.Order{
 		Side:     "SELL",
 		Symbol:   market,
@@ -56,7 +56,7 @@ func (exchange *Exchange) Sell(market string, quantity float64) (string, error) 
 }
 
 // Buy create a buy order to market price
-func (exchange *Exchange) Buy(market string, quantity float64) (string, error) {
+func (exchange *CryptoExchange) Buy(market string, quantity float64) (string, error) {
 	order := cryptoCom.Order{
 		Side:     "BUY",
 		Symbol:   market,
