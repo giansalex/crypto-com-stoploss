@@ -6,7 +6,7 @@ import (
 	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
 )
 
-// Exchange wrapper to connect to crypto.com API
+// CryptoExchange wrapper to connect to crypto.com API
 type CryptoExchange struct {
 	api *cryptoCom.API
 }
