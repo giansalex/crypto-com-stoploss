@@ -60,3 +60,6 @@ List available parameters
   -telegram.chat int
         (optional) telegram User ID for notify
 ```
+
+## Signup
+Are you new user?, [signup](https://platinum.crypto.com/r/chr2wsfs6g) and use this referral code: `chr2wsfs6g` for earn bonus coin.
