@@ -1,7 +1,7 @@
 package stoploss
 
 import (
-	"fmt"
+	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -19,7 +19,7 @@ func NewNotify(telegramToken string, channelID int64) *Notify {
 
 // Send send message
 func (notify *Notify) Send(message string) {
-	fmt.Println(message)
+	log.Println(message)
 
 	if notify.tlgToken == "" {
 		return
@@ -27,7 +27,7 @@ func (notify *Notify) Send(message string) {
 
 	bot, err := tgbotapi.NewBotAPI(notify.tlgToken)
 	if err != nil {
-		fmt.Println("Cannot connect to Telegram:", err.Error())
+		log.Println("Cannot connect to Telegram:", err.Error())
 
 		return
 	}
@@ -37,6 +37,6 @@ func (notify *Notify) Send(message string) {
 	_, err = bot.Send(msg)
 
 	if err != nil {
-		fmt.Println("Cannot send message to telegram:", err.Error())
+		log.Println("Cannot send message to telegram:", err.Error())
 	}
 }
