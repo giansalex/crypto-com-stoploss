@@ -16,12 +16,12 @@ jobs:
         uses: thatisuday/go-cross-build@v1
         with:
             platforms: 'linux/amd64, darwin/amd64, windows/amd64'
-            package: ''
+            package: 'app'
             name: 'crypto'
             compress: 'true'
             dest: 'dist'
       - name: Upload to release
-        uses: skx/github-action-publish-binaries@release-0.14
+        uses: skx/github-action-publish-binaries@release-0.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
