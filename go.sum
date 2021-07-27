@@ -4,8 +4,8 @@ github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dR
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/giansalex/binance-stoploss v0.0.0-20210727202433-4dc2e2666f3e h1:CqTqJCNWo/WgbpYW7I+it06/7VN1qA9dcto5BUAv9mE=
-github.com/giansalex/binance-stoploss v0.0.0-20210727202433-4dc2e2666f3e/go.mod h1:CrFCs1O0zdY/SD2g0tPMb9eWKUVtHK0rkMR4dxud7AQ=
+github.com/giansalex/binance-stoploss v1.0.1 h1:OnM+n5H3Zu5I5yOFgnabM2bV4bKkUhC3LxXocsr27GE=
+github.com/giansalex/binance-stoploss v1.0.1/go.mod h1:CrFCs1O0zdY/SD2g0tPMb9eWKUVtHK0rkMR4dxud7AQ=
 github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible h1:2cauKuaELYAEARXRkq2LrJ0yDDv1rW7+wrTEdVL3uaU=
 github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible/go.mod h1:qf9acutJ8cwBUhm1bqgz6Bei9/C/c93FPDljKWwsOgM=
 github.com/gorilla/websocket v1.2.0/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoAMk2YaljkQ=
