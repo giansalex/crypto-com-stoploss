@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
-	"github.com/giansalex/crypto-com-trailing-stop-loss/stoploss"
+	cryptoCom "github.com/giansalex/crypto-com-stoploss/crypto"
+	"github.com/giansalex/crypto-com-stoploss/stoploss"
 )
 
 var (

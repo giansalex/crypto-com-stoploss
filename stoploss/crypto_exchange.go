@@ -3,7 +3,7 @@ package stoploss
 import (
 	"strings"
 
-	cryptoCom "github.com/giansalex/crypto-com-trailing-stop-loss/crypto"
+	cryptoCom "github.com/giansalex/crypto-com-stoploss/crypto"
 )
 
 // CryptoExchange wrapper to connect to crypto.com API
