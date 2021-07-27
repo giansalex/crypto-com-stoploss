@@ -41,7 +41,7 @@ Use telegram for notifications.
 ```
 > For get user id, talk o the [userinfobot](https://t.me/userinfobot)
 
-![Crypto bot Telegram](https://raw.githubusercontent.com/giansalex/crypto-com-trailing-stop-loss/master/doc/telegram-cryptobot.png)
+![Crypto bot Telegram](https://raw.githubusercontent.com/giansalex/crypto-com-trailing-stop-loss/master/doc/crypto-com-telegram-bot.png)
 
 List available parameters 
 ```sh
