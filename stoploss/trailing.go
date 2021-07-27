@@ -5,12 +5,15 @@ import (
 	"math"
 	"math/big"
 	"strings"
+
+	"github.com/giansalex/binance-stoploss/notify"
 )
 
 // Trailing stop-loss runner
 type Trailing struct {
 	exchange  Exchange
-	notify    *Notify
+	notify    notify.SingleNotify
+	sLog      notify.SingleNotify
 	config    *Config
 	market    string
 	baseCoin  string
@@ -19,12 +22,13 @@ type Trailing struct {
 }
 
 // NewTrailing new trailing instance
-func NewTrailing(exchange Exchange, notify *Notify, config *Config) *Trailing {
+func NewTrailing(exchange Exchange, notify notify.SingleNotify, logNotify notify.SingleNotify, config *Config) *Trailing {
 	pair := strings.Split(strings.ToUpper(config.Market), "/")
 
 	tlg := &Trailing{
 		exchange:  exchange,
 		notify:    notify,
+		sLog:      logNotify,
 		config:    config,
 		market:    pair[0] + "_" + pair[1],
 		baseCoin:  pair[0],
@@ -76,7 +80,9 @@ func (tlg *Trailing) runSell() bool {
 	if err != nil {
 		tlg.notify.Send("Cannot create sell order, error:" + err.Error())
 	} else {
-		tlg.notify.Send(fmt.Sprintf("Sell: %.4f %s - Market Price (%s): %.6f - Order ID: %s", quantity, tlg.baseCoin, tlg.baseCoin, marketPrice, order))
+		msgFmt := "📉 ## <b>SELL</b> ##\n<i>Market:</i> <code>%s</code>\n<i>Amount:</i> %.4f <code>%s</code> \n<i>Price:</i> %.6f <code>%s</code>\n<i>Order:</i> %s"
+		tlg.notify.Send(fmt.Sprintf(msgFmt, tlg.config.Market, quantity, tlg.baseCoin, marketPrice, tlg.countCoin, order))
+		tlg.sLog.Send(msgFmt)
 	}
 
 	return true
@@ -111,7 +117,9 @@ func (tlg *Trailing) runBuy() bool {
 	if err != nil {
 		tlg.notify.Send("Cannot create buy order, error:" + err.Error())
 	} else {
-		tlg.notify.Send(fmt.Sprintf("Buy: %.4f %s - Market Price (%s): %.6f - Order ID: %s", quantity, tlg.countCoin, tlg.baseCoin, marketPrice, order))
+		msgFmt := "📈 ## <b>BUY</b> ##\n<i>Market:</i> <code>%s</code>\n<i>Amount:</i> %.4f <code>%s</code> \n<i>Price:</i> %.6f <code>%s</code>\n<i>Order:</i> %s"
+		tlg.notify.Send(fmt.Sprintf(msgFmt, tlg.config.Market, quantity, tlg.baseCoin, marketPrice, tlg.countCoin, order))
+		tlg.sLog.Send(msgFmt)
 	}
 
 	return true
@@ -140,9 +148,11 @@ func (tlg *Trailing) notifyStopLossChange(prev float64, next float64, price floa
 		return
 	}
 
+	msg := fmt.Sprintf("New stoploss %s (%s): %.6f - Market Price: %.6f", tlg.market, tlg.config.OrderType, next, price)
+	tlg.sLog.Send(msg)
+
 	if !tlg.config.NotifyStopChange {
 		return
 	}
-
-	tlg.notify.Send(fmt.Sprintf("Stop-loss %s (%s): %.6f - Market Price: %.6f", tlg.market, tlg.config.OrderType, next, price))
+	tlg.notify.Send(msg)
 }
