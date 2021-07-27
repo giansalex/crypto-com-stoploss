@@ -140,5 +140,9 @@ func (tlg *Trailing) notifyStopLossChange(prev float64, next float64, price floa
 		return
 	}
 
+	if !tlg.config.NotifyStopChange {
+		return
+	}
+
 	tlg.notify.Send(fmt.Sprintf("Stop-loss %s (%s): %.6f - Market Price: %.6f", tlg.market, tlg.config.OrderType, next, price))
 }
