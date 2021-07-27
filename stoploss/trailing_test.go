@@ -28,9 +28,16 @@ func (exchange *MockExchange) Buy(market string, quantity float64) (string, erro
 	return "00001", nil
 }
 
+type MockNotify struct {
+}
+
+func (notify MockNotify) Send(message string) error {
+	return nil
+}
+
 func TestSell(t *testing.T) {
 
-	notify := NewNotify("", 0)
+	notify := &MockNotify{}
 	exchange := &MockExchange{0.01, 0}
 	config := &Config{
 		OrderType:  "SELL",
@@ -39,7 +46,7 @@ func TestSell(t *testing.T) {
 		Quantity:   0,
 		Price:      9000,
 	}
-	trailing := NewTrailing(exchange, notify, config)
+	trailing := NewTrailing(exchange, notify, notify, config)
 
 	is := is.New(t)
 
@@ -58,7 +65,7 @@ func TestSell(t *testing.T) {
 
 func TestBuy(t *testing.T) {
 
-	notify := NewNotify("", 0)
+	notify := &MockNotify{}
 	exchange := &MockExchange{}
 	config := &Config{
 		OrderType:  "BUY",
@@ -67,7 +74,7 @@ func TestBuy(t *testing.T) {
 		Quantity:   200,
 		Price:      9000,
 	}
-	trailing := NewTrailing(exchange, notify, config)
+	trailing := NewTrailing(exchange, notify, notify, config)
 
 	is := is.New(t)
 
