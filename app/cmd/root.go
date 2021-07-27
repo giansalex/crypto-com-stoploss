@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"flag"
@@ -20,7 +20,7 @@ var (
 	chatPtr     = flag.Int64("telegram.chat", 0, "(optional) telegram User ID for notify")
 )
 
-func main() {
+func Execute() {
 	flag.Parse()
 	apiKey := os.Getenv("CRYPTO_APIKEY")
 	secret := os.Getenv("CRYPTO_SECRET")
