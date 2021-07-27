@@ -10,7 +10,7 @@ RUN apk update && \
 COPY . .
 
 # Build executable
-RUN CGO_ENABLED=0 go build -ldflags "-s -w" -gcflags=all=-l ./app -o /build/crypto
+RUN CGO_ENABLED=0 go build -ldflags "-s -w" -gcflags=all=-l -o /build/crypto ./app
 
 # Release image
 FROM scratch
