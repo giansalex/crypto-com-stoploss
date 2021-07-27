@@ -21,7 +21,7 @@ jobs:
             compress: 'true'
             dest: 'dist'
       - name: Upload to release
-        uses: skx/github-action-publish-binaries@release-0.14
+        uses: skx/github-action-publish-binaries@release-0.15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
