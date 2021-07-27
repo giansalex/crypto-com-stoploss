@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	cryptoCom "github.com/giansalex/crypto-com-stoploss/crypto"
@@ -39,7 +40,15 @@ func Execute() {
 
 	api := cryptoCom.NewAPI(apiKey, secret)
 	notify := stoploss.NewNotify(os.Getenv("TELEGRAM_TOKEN"), *chatPtr)
-	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, *typePtr, *pairPtr, *percentPtr/100, *amountPtr, *pricePtr)
+	config := &stoploss.Config{
+		OrderType:        strings.ToUpper(*typePtr),
+		Market:           *pairPtr,
+		Price:            *pricePtr,
+		Quantity:         *amountPtr,
+		StopFactor:       *percentPtr / 100,
+		NotifyStopChange: false,
+	}
+	trailing := stoploss.NewTrailing(stoploss.NewExchange(api), notify, config)
 
 	for {
 		if trailing.RunStop() {

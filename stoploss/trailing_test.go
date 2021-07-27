@@ -32,7 +32,14 @@ func TestSell(t *testing.T) {
 
 	notify := NewNotify("", 0)
 	exchange := &MockExchange{0.01, 0}
-	trailing := NewTrailing(exchange, notify, "SELL", "BTC/USDT", 0, 0, 9000)
+	config := &Config{
+		OrderType:  "SELL",
+		Market:     "BTC/USDT",
+		StopFactor: 0,
+		Quantity:   0,
+		Price:      9000,
+	}
+	trailing := NewTrailing(exchange, notify, config)
 
 	is := is.New(t)
 
@@ -53,7 +60,14 @@ func TestBuy(t *testing.T) {
 
 	notify := NewNotify("", 0)
 	exchange := &MockExchange{}
-	trailing := NewTrailing(exchange, notify, "BUY", "BTC/USDT", 0, 200, 9000)
+	config := &Config{
+		OrderType:  "BUY",
+		Market:     "BTC/USDT",
+		StopFactor: 0,
+		Quantity:   200,
+		Price:      9000,
+	}
+	trailing := NewTrailing(exchange, notify, config)
 
 	is := is.New(t)
 
